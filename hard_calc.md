@@ -1,10 +1,10 @@
 # ハードウェアによる演算
 
 ハードウェアでは信号伝搬の最適化のために, 単純な四則演算であっても適切な設計を求められる.
-ハードウェアによる数値演算のほとんどは『[ディジタル数値演算回路の実用設計](https://books.google.co.jp/books/about/%E3%83%87%E3%82%A3%E3%82%B8%E3%82%BF%E3%83%AB%E6%95%B0%E5%80%A4%E6%BC%94%E7%AE%97%E5%9B%9E%E8%B7%AF%E3%81%AE%E5%AE%9F.html?id=q5tpGQAACAAJ&source=kp_book_description&redir_esc=y)』が詳しいので, これでほとんど済む.
-『ディジタル~』ではASICのためにビット演算に関しても詳しく書かれているが, FPGAのコンパイラによって設計する場合はそこまでは求められない.
+ハードウェアによる数値演算のほとんどは『[ディジタル数値演算回路の実用設計](https://books.google.co.jp/books/about/%E3%83%87%E3%82%A3%E3%82%B8%E3%82%BF%E3%83%AB%E6%95%B0%E5%80%A4%E6%BC%94%E7%AE%97%E5%9B%9E%E8%B7%AF%E3%81%AE%E5%AE%9F.html?id=q5tpGQAACAAJ&source=kp_book_description&redir_esc=y)』[[1](digi_suzuki)]が詳しいので, これでほとんど済む.
+『ディジタル~』[[1](digi_suzuki)]ではASICのためにビット演算に関しても詳しく書かれているが, FPGAのコンパイラによって設計する場合はそこまでは求められない.
 そのため本稿でもビット演算については立ち入らない.
-というか『ディジタル~』を読めばすべてが事足りる.
+というか『ディジタル~』[[1](digi_suzuki)]を読めばすべてが事足りる.
 
 以下の四則演算ではまず整数演算について考える.
 そのあと量子化や固定小数点について考える.
@@ -13,6 +13,7 @@
 ## 型と表現
 
 VHDLでは特に型が厳密に指定される.
+
 演算ではそれぞれの信号のビット幅は統一されている必要がある.
 また演算によってビット幅は変化するため, どのように変化するかも予測する必要がある.
 
@@ -102,7 +103,7 @@ FPGAにはハード乗算器が使えるものも多いので, ハード乗算�
 乗算では数は符号と絶対値に分解できるため, 浮動小数点のような符号を別に扱う表現が強力である.
 演算は絶対値のみを扱い, 符号は後からつけてやればよい.
 
-#### 2の補数における乗算[[1](signed_mpx)]  
+#### 2の補数における乗算[[2](signed_mpx)]  
 
 2の補数表現は符号と絶対値が分離できないため, 乗算においては特別な操作が必要である.
 このとき乗算によってビット数が増えるため, 2の補数で得られる解もビット数が増える.
@@ -116,8 +117,7 @@ FPGAにはハード乗算器が使えるものも多いので, ハード乗算�
 110 | 1111 0010   -14  
 ```
 上位ビットの1埋めによって更に発生した上位桁は無視すると, 正しい結果が得られる.  
-[[1](signed_mpx)] [符号付き乗算－WentWayUp](https://wentwayup.tamaliver.jp/e165237.html)
-     [https://wentwayup.tamaliver.jp/e165237.html](https://wentwayup.tamaliver.jp/e165237.html)
+
 
 
 ## 除算  
@@ -140,3 +140,21 @@ $ \{ 2^{-2}, 2^{-3}, 2^{-4} \}$
 $ 2^{-4} \cdot( 2^2, 2, 1) $  
 と書き換えることで, 個々の小数点演算を行う必要がなくなる.
 フィルタなど多くの小数点係数（行）列を持つ演算ではこの量子化によって得られた公約数を増幅率として扱う.
+
+
+
+## 丸め処理
+
+実際の演算では有効桁が決まっているため, 丸め処理が必要になる. 丸め処理には誤差が伴うため, 誤差をどれだけ見積もるかということがどのような丸め処理を行うかということにつながる. また丸め処理は出力に影響するため, ほとんど規格化されている. そのため本稿では参考を挙げるに留める. 『ディジタル~』[[1](digi_suzuki)]にも浮動小数点の丸め処理が紹介されている.
+
+- [浮動小数点の丸めの方向と性質 (1) - 小清水さんとコンピューター数学](http://math-koshimizu.hatenablog.jp/entry/2016/12/04/224208)
+- [7.浮動小数点数と丸め誤差 - Numerical Computation as Software(ソフトウェアとしての数値計算)](https://na-inet.jp/nasoft/)
+
+
+# 参考
+[[1](digi_suzuki)] 鈴木 昌治, [ディジタル数値演算回路の実用設計](https://books.google.co.jp/books/about/%E3%83%87%E3%82%A3%E3%82%B8%E3%82%BF%E3%83%AB%E6%95%B0%E5%80%A4%E6%BC%94%E7%AE%97%E5%9B%9E%E8%B7%AF%E3%81%AE%E5%AE%9F.html?id=q5tpGQAACAAJ&source=kp_book_description&redir_esc=y), CQ出版, 2006
+[[2](signed_mpx)] [符号付き乗算－WentWayUp](https://wentwayup.tamaliver.jp/e165237.html)
+     [https://wentwayup.tamaliver.jp/e165237.html](https://wentwayup.tamaliver.jp/e165237.html)
+[[3](math-koshimizu)] [浮動小数点の丸めの方向と性質 (1) - 小清水さんとコンピューター数学](http://math-koshimizu.hatenablog.jp/entry/2016/12/04/224208)
+     [http://math-koshimizu.hatenablog.jp/entry/2016/12/04/224208](http://math-koshimizu.hatenablog.jp/entry/2016/12/04/224208)
+[[4](na-inet)] 幸谷 智紀, [7.浮動小数点数と丸め誤差 - Numerical Computation as Software(ソフトウェアとしての数値計算)](https://na-inet.jp/nasoft/), 2007
